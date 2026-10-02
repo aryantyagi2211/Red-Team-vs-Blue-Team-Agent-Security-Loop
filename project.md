@@ -33,7 +33,8 @@ redteam/
 ├── cli/                             # Typer command-line interface package (implementation pending)
 │   └── __init__.py                  # Python package marker
 ├── core/                            # Core models, scoring, runners, and loop (implementation pending)
-│   └── __init__.py                  # Python package marker
+│   ├── __init__.py                  # Python package marker
+│   └── models.py                    # Typed Pydantic attack, result, patch, and round models
 ├── dashboard/                       # Evaluation dashboard (implementation pending)
 │   └── .gitkeep                     # Placeholder until dashboard files are added
 ├── docs/                            # Integration notes and demonstration documentation
@@ -50,5 +51,6 @@ redteam/
 │   └── __init__.py                  # Python package marker
 ├── task.md                          # Ordered implementation checklist and task status
 └── tests/                           # Automated project tests
+    ├── test_models.py               # Model fields and validation behavior
     └── test_scaffold.py             # Package import and Python version smoke tests
 ```

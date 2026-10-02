@@ -9,11 +9,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** The package installs, all planned directories exist, scaffold tests pass, and the README describes the project and current status.
    - **Completion note:** Scaffolded the Python package and planned directories; editable install succeeded on Python 3.14.2, all 6 smoke tests passed, and Ruff passed.
 
-2. [ ] **Models**
+2. [x] **Models**
    - **Goal:** Define typed `Attack`, `AttackResult`, `Patch`, and `RoundRecord` data models.
    - **Files touched:** `core/models.py`, `tests/test_models.py`.
    - **How to test:** Run `python -m pytest tests/test_models.py`.
    - **Done when:** Model fields and validation behavior are covered by passing tests.
+   - **Completion note:** Added the four Pydantic models, typed attack category/split/status values, deterministic success-check validation, bounded ASR/utility rates, and offline validation tests.
 
 3. [ ] **Attack library**
    - **Goal:** Draft training and holdout attack sets using the attack-library skill, with fake canaries only.
