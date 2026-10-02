@@ -35,6 +35,7 @@ redteam/
 │   └── __init__.py                  # Python package marker
 ├── core/                            # Core models, scoring, runners, and loop (implementation pending)
 │   ├── __init__.py                  # Python package marker
+│   ├── attacker.py                  # Async runner and local fake sandbox client
 │   ├── judge.py                     # Deterministic string scoring and split/category ASR
 │   └── models.py                    # Typed Pydantic attack, result, patch, and round models
 ├── dashboard/                       # Evaluation dashboard (implementation pending)
@@ -61,6 +62,7 @@ redteam/
 ├── task.md                          # Ordered implementation checklist and task status
 └── tests/                           # Automated project tests
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
+    ├── test_attacker.py             # Fake-client attack execution and result collection
     ├── test_judge.py                # Deterministic scoring and ASR behavior
     ├── test_models.py               # Model fields and validation behavior
     ├── test_targets.py              # Sandbox utility and canary isolation checks

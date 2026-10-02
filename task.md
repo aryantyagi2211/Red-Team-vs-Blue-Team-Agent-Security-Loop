@@ -37,11 +37,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** Target fixtures respond to benign tasks and contain only fake canaries and data.
    - **Completion note:** Added two local deterministic sandbox targets with distinct prompt canaries, three benign tasks each, safe fallback responses, and offline utility/canary tests.
 
-6. [ ] **Attacker runner**
+6. [x] **Attacker runner**
    - **Goal:** Run attack cases against a fake client without contacting external systems.
    - **Files touched:** `core/attacker.py`, `tests/test_attacker.py`.
    - **How to test:** Run `python -m pytest tests/test_attacker.py`.
    - **Done when:** Fake-client tests verify attack requests and collected results.
+   - **Completion note:** Added an async attack runner and local fake sandbox client; tests cover request order, deterministic scoring, expected target errors, and propagation of unexpected failures.
 
 7. [ ] **Defender and patcher**
    - **Goal:** Apply logged prompt/config diffs, defend targets, and support rollback.

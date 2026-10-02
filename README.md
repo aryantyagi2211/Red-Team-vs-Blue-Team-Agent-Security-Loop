@@ -4,7 +4,7 @@ A local, controlled security-evaluation project that tests only sandbox agents w
 
 ## Current status
 
-The Python package is scaffolded, the four core Pydantic models and deterministic judge are implemented, and two local sandbox targets with unique fake canaries and benign tasks are available. The 30 manually drafted attacks are split between training and holdout libraries (21/9). Offline tests cover models, attack split separation, deterministic scoring, ASR reporting, and target utility; the loop, CLI, API, and dashboard are not implemented yet. Nasiko-specific implementation is gated on the verified repository research and user confirmation in task 11.
+The Python package is scaffolded, the four core Pydantic models and deterministic judge are implemented, and two local sandbox targets with unique fake canaries and benign tasks are available. An async attacker runner sends attacks through a fake local client and scores responses. The 30 manually drafted attacks are split between training and holdout libraries (21/9). Offline tests cover models, attack split separation, deterministic scoring, ASR reporting, target utility, and attack execution; the loop, CLI, API, and dashboard are not implemented yet. Nasiko-specific implementation is gated on the verified repository research and user confirmation in task 11.
 
 ## Requirements
 
