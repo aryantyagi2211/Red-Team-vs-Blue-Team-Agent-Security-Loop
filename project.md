@@ -35,6 +35,7 @@ redteam/
 │   └── __init__.py                  # Python package marker
 ├── core/                            # Core models, scoring, runners, and loop (implementation pending)
 │   ├── __init__.py                  # Python package marker
+│   ├── judge.py                     # Deterministic string scoring and split/category ASR
 │   └── models.py                    # Typed Pydantic attack, result, patch, and round models
 ├── dashboard/                       # Evaluation dashboard (implementation pending)
 │   └── .gitkeep                     # Placeholder until dashboard files are added
@@ -53,6 +54,7 @@ redteam/
 ├── task.md                          # Ordered implementation checklist and task status
 └── tests/                           # Automated project tests
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
+    ├── test_judge.py                # Deterministic scoring and ASR behavior
     ├── test_models.py               # Model fields and validation behavior
     └── test_scaffold.py             # Package import and Python version smoke tests
 ```

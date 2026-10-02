@@ -23,11 +23,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** Both JSON sets validate against the attack model and holdout cases are distinct from training cases.
    - **Completion note:** Added 30 manually drafted attacks (21 train, 9 holdout) across all four categories; model validation, split, ID, canary-check, and Jaccard overlap tests pass.
 
-4. [ ] **Deterministic judge**
+4. [x] **Deterministic judge**
    - **Goal:** Score attack results deterministically using planted fake canaries and forbidden behaviors.
    - **Files touched:** `core/judge.py`, `tests/test_judge.py`.
    - **How to test:** Run `python -m pytest tests/test_judge.py`.
    - **Done when:** Tests cover successful and unsuccessful outcomes without relying on an LLM judge.
+   - **Completion note:** Added normalized, case-insensitive canary and forbidden-phrase matching plus split and category ASR reporting; all judge tests pass offline.
 
 5. [ ] **Sandbox targets**
    - **Goal:** Add locally controlled sandbox agents with fake canaries and benign tasks.
