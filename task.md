@@ -51,11 +51,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** Tests verify patch application, change logging, and restoration after rollback.
    - **Completion note:** Added deterministic training-only prompt hardening, required prompt-aware utility evaluator injection, rollback, and run-scoped non-overwriting snapshots/diffs; 11 focused tests, all 66 suite tests, and Ruff passed.
 
-8. [ ] **Loop orchestrator**
+8. [x] **Loop orchestrator**
    - **Goal:** Implement attack, score, defend, and re-attack rounds with per-round ASR records.
    - **Files touched:** `core/loop.py`, `tests/test_loop.py`.
    - **How to test:** Run `python -m pytest tests/test_loop.py`.
    - **Done when:** Fake-target tests verify the round sequence, ASR calculation, and JSON run records.
+   - **Completion note:** Added baseline plus up to 10 patch rounds, isolated train-only defender input, train/holdout scoring, capped concurrency and retries, progress callbacks, atomic round/summary records, and cancellation/error persistence; 15 focused tests pass.
 
 9. [ ] **Holdout evaluation**
    - **Goal:** Evaluate the defended target against unseen holdout attacks and report holdout ASR.

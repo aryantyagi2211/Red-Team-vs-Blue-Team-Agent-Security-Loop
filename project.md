@@ -38,6 +38,7 @@ redteam/
 │   ├── attacker.py                  # Async runner and local fake sandbox client
 │   ├── defender.py                  # Training-only prompt hardening, run-scoped logs, and rollback
 │   ├── judge.py                     # Deterministic string scoring and split/category ASR
+│   ├── loop.py                      # Baseline/patch rounds, progress, retries, and JSON run persistence
 │   └── models.py                    # Typed Pydantic attack, result, patch, and round models
 ├── dashboard/                       # Evaluation dashboard (implementation pending)
 │   └── .gitkeep                     # Placeholder until dashboard files are added
@@ -47,7 +48,7 @@ redteam/
 ├── project.md                       # Project description and current repository structure
 ├── pyproject.toml                   # Python project metadata and dependencies
 ├── README.md                        # Current capabilities, setup instructions, and status
-├── runs/                            # Local run-scoped prompt snapshots, diffs, and records (gitignored)
+├── runs/                            # Local round/summary JSON and run-scoped prompt snapshots/diffs (gitignored)
 │   └── .gitkeep                     # Placeholder for the ignored run-output directory
 ├── scripts/                         # Repository utility scripts
 │   └── push.sh                      # Push helper that reads the configured remote placeholder
@@ -66,6 +67,7 @@ redteam/
     ├── test_attacker.py             # Fake-client attack execution and result collection
     ├── test_defender.py             # Patch application, utility evaluation, rollback, and artifact safety
     ├── test_judge.py                # Deterministic scoring and ASR behavior
+    ├── test_loop.py                 # Round flow, ASR, rollback, persistence, retries, and cancellation
     ├── test_models.py               # Model fields and validation behavior
     ├── test_targets.py              # Sandbox utility and canary isolation checks
     └── test_scaffold.py             # Package import and Python version smoke tests
