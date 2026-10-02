@@ -44,8 +44,9 @@ redteam/
 │   └── models.py                    # Typed Pydantic attack, result, patch, and round models
 ├── dashboard/                       # Evaluation dashboard (implementation pending)
 │   └── .gitkeep                     # Placeholder until dashboard files are added
-├── docs/                            # Integration notes and demonstration documentation
-│   └── .gitkeep                     # Placeholder until documentation is added
+├── docs/                            # Verified Nasiko integration notes and demo documentation
+│   ├── .gitkeep                     # Existing documentation-directory placeholder
+│   └── nasiko-notes.md              # Facts checked against the read-only sibling Nasiko repo
 ├── git_remote.txt                   # User-managed Git remote URL placeholder
 ├── project.md                       # Project description and current repository structure
 ├── pyproject.toml                   # Python project metadata and dependencies

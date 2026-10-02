@@ -72,11 +72,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
     - **Done when:** Run and report commands call the shared core and have passing CLI tests.
     - **Completion note:** Added `redteam run`, `report`, and `attacks list`, progress output, safe run lookup, and `--fail-above`; offline CLI tests and project checks pass.
 
-11. [ ] **Nasiko notes**
+11. [x] **Nasiko notes**
     - **Goal:** Read `../nasiko` and write factual integration notes; ask the user to confirm before any Nasiko-specific implementation.
     - **Files touched:** `docs/nasiko-notes.md`.
     - **How to test:** Review each note against source files in `../nasiko`; no code test applies.
     - **Done when:** Notes cite verified repository facts and the user has been asked to confirm before task 12.
+    - **Completion note:** Read the sibling README, agent lifecycle/A2A/CLI docs, CLI source and Python example; documented local setup, agent structure, deploy and chat commands in `docs/nasiko-notes.md`. Cargo was unavailable for rendered CLI help; the command source was inspected. Noted the A2A 1.0 vs example-card 0.2.9 mismatch and requested confirmation before integration.
 
 12. [ ] **Nasiko client and deploy targets**
     - **Goal:** After user confirmation, implement a Nasiko client and deploy sandbox targets using verified interfaces only.
