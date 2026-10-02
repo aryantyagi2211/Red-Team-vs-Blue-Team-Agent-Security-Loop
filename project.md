@@ -28,7 +28,8 @@ redteam/
 ├── api/                             # FastAPI wrapper package (implementation pending)
 │   └── __init__.py                  # Python package marker
 ├── attacks/                         # Training and holdout attack-library data
-│   ├── .gitkeep                     # Placeholder until attack data is added
+│   ├── holdout.json                 # Unseen evaluation attack drafts
+│   ├── train.json                   # Training attack drafts
 │   └── __init__.py                  # Python package marker
 ├── cli/                             # Typer command-line interface package (implementation pending)
 │   └── __init__.py                  # Python package marker
@@ -51,6 +52,7 @@ redteam/
 │   └── __init__.py                  # Python package marker
 ├── task.md                          # Ordered implementation checklist and task status
 └── tests/                           # Automated project tests
+    ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
     ├── test_models.py               # Model fields and validation behavior
     └── test_scaffold.py             # Package import and Python version smoke tests
 ```

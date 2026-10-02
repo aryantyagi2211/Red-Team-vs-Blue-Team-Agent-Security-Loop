@@ -16,11 +16,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** Model fields and validation behavior are covered by passing tests.
    - **Completion note:** Added the four Pydantic models, typed attack category/split/status values, deterministic success-check validation, bounded ASR/utility rates, and offline validation tests.
 
-3. [ ] **Attack library**
+3. [x] **Attack library**
    - **Goal:** Draft training and holdout attack sets using the attack-library skill, with fake canaries only.
    - **Files touched:** `attacks/train.json`, `attacks/holdout.json`, `tests/test_attack_library.py`.
    - **How to test:** Run `python -m pytest tests/test_attack_library.py`.
    - **Done when:** Both JSON sets validate against the attack model and holdout cases are distinct from training cases.
+   - **Completion note:** Added 30 manually drafted attacks (21 train, 9 holdout) across all four categories; model validation, split, ID, canary-check, and Jaccard overlap tests pass.
 
 4. [ ] **Deterministic judge**
    - **Goal:** Score attack results deterministically using planted fake canaries and forbidden behaviors.

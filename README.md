@@ -4,7 +4,7 @@ A local, controlled security-evaluation project that tests only sandbox agents w
 
 ## Current status
 
-The Python package is scaffolded, and the four core Pydantic models are implemented and tested. The scaffold tests and model validation tests run offline; attack data, the judge, sandbox targets, the loop, CLI, API, and dashboard are not implemented yet. Nasiko-specific implementation is gated on the verified repository research and user confirmation in task 11.
+The Python package is scaffolded, the four core Pydantic models are implemented, and 30 manually drafted attacks are split between training and holdout libraries (21/9). Offline tests validate the models, attack data, and split separation; the judge, sandbox targets, loop, CLI, API, and dashboard are not implemented yet. Nasiko-specific implementation is gated on the verified repository research and user confirmation in task 11.
 
 ## Requirements
 
