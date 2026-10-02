@@ -41,6 +41,8 @@ def load_target(name: str) -> SandboxTarget:
     target_dir = (TARGETS_DIR / name).resolve()
     if target_dir.parent != TARGETS_DIR.resolve():
         raise ValueError("target must be a direct child of the targets directory")
+    if not target_dir.is_dir():
+        raise FileNotFoundError(f"unknown sandbox target: {name}")
 
     prompt_path = target_dir / "prompt.txt"
     tasks_path = target_dir / "benign_tasks.json"

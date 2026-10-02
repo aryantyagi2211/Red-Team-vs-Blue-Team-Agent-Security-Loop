@@ -65,11 +65,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** Tests confirm the holdout set is evaluated separately and its ASR is reported.
    - **Completion note:** Added per-run split hashes verified throughout loop execution, strict >60% Jaccard overlap rejection, holdout ASR by category on every round, and a persisted baseline/final report with a strict >0.15 generalization-gap warning; 26 holdout/loop tests and all 93 project tests pass.
 
-10. [ ] **CLI**
+10. [x] **CLI**
     - **Goal:** Add Typer commands for running evaluations and reporting saved runs through the shared core.
-    - **Files touched:** `cli/`, `pyproject.toml`, `tests/test_cli.py`, `README.md`.
+    - **Files touched:** `cli/`, `targets/sandbox.py`, `pyproject.toml`, `tests/test_cli.py`, `tests/test_targets.py`, `README.md`.
     - **How to test:** Run `python -m pytest tests/test_cli.py` and check the CLI help output.
     - **Done when:** Run and report commands call the shared core and have passing CLI tests.
+    - **Completion note:** Added `redteam run`, `report`, and `attacks list`, progress output, safe run lookup, and `--fail-above`; offline CLI tests and project checks pass.
 
 11. [ ] **Nasiko notes**
     - **Goal:** Read `../nasiko` and write factual integration notes; ask the user to confirm before any Nasiko-specific implementation.

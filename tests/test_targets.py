@@ -41,7 +41,7 @@ def test_target_loader_rejects_invalid_target_names(name: str) -> None:
 
 
 def test_target_loader_reports_unknown_target_directory() -> None:
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError, match="unknown sandbox target"):
         load_target("unknown_target")
 
 

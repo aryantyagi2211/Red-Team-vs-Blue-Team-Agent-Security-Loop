@@ -31,8 +31,9 @@ redteam/
 │   ├── holdout.json                 # Unseen evaluation attack drafts
 │   ├── train.json                   # Training attack drafts
 │   └── __init__.py                  # Python package marker
-├── cli/                             # Typer command-line interface package (implementation pending)
-│   └── __init__.py                  # Python package marker
+├── cli/                             # Typer commands for local runs, reports, and attack listing
+│   ├── __init__.py                  # Python package marker
+│   └── main.py                      # Thin CLI wrapper around core loop and saved artifacts
 ├── core/                            # Core models, scoring, defense, runners, and loop
 │   ├── __init__.py                  # Python package marker
 │   ├── attacker.py                  # Async runner and local fake sandbox client
@@ -66,6 +67,7 @@ redteam/
 └── tests/                           # Automated project tests
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
     ├── test_attacker.py             # Fake-client attack execution and result collection
+    ├── test_cli.py                  # CLI run, report, attack listing, and exit-code behavior
     ├── test_defender.py             # Patch application, utility evaluation, rollback, and artifact safety
     ├── test_holdout.py              # Split integrity, overlap, per-category ASR, and gap warnings
     ├── test_judge.py                # Deterministic scoring and ASR behavior
