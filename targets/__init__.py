@@ -1,1 +1,1 @@
-"""Sandbox target package."""
+"""Locally controlled sandbox target agents."""

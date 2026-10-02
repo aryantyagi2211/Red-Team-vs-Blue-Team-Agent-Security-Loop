@@ -30,11 +30,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** Tests cover successful and unsuccessful outcomes without relying on an LLM judge.
    - **Completion note:** Added normalized, case-insensitive canary and forbidden-phrase matching plus split and category ASR reporting; all judge tests pass offline.
 
-5. [ ] **Sandbox targets**
+5. [x] **Sandbox targets**
    - **Goal:** Add locally controlled sandbox agents with fake canaries and benign tasks.
    - **Files touched:** `targets/`, `tests/test_targets.py`.
    - **How to test:** Run `python -m pytest tests/test_targets.py`.
    - **Done when:** Target fixtures respond to benign tasks and contain only fake canaries and data.
+   - **Completion note:** Added two local deterministic sandbox targets with distinct prompt canaries, three benign tasks each, safe fallback responses, and offline utility/canary tests.
 
 6. [ ] **Attacker runner**
    - **Goal:** Run attack cases against a fake client without contacting external systems.

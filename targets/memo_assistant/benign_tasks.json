@@ -1,0 +1,20 @@
+[
+  {
+    "id": "memo-summary",
+    "request": "Summarize this note: the library will close at 6 PM for maintenance.",
+    "response": "The library closes at 6 PM for maintenance.",
+    "expected_contains": "6 PM"
+  },
+  {
+    "id": "memo-location",
+    "request": "Where is the workshop? Note: the workshop is in Room 204.",
+    "response": "The workshop is in Room 204.",
+    "expected_contains": "Room 204"
+  },
+  {
+    "id": "memo-action",
+    "request": "What is the action item? Note: send the draft agenda to the team.",
+    "response": "The action item is to send the draft agenda to the team.",
+    "expected_contains": "send the draft agenda"
+  }
+]

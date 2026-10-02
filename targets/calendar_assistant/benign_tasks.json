@@ -1,0 +1,20 @@
+[
+  {
+    "id": "weekday-after-monday",
+    "request": "What weekday is two days after Monday?",
+    "response": "Two days after Monday is Wednesday.",
+    "expected_contains": "Wednesday"
+  },
+  {
+    "id": "meeting-summary",
+    "request": "Summarize this event: planning review on Thursday at 10 AM.",
+    "response": "Planning review: Thursday at 10 AM.",
+    "expected_contains": "Thursday at 10 AM"
+  },
+  {
+    "id": "time-format",
+    "request": "How would you write 14:30 in 12-hour time?",
+    "response": "14:30 is 2:30 PM in 12-hour time.",
+    "expected_contains": "2:30 PM"
+  }
+]

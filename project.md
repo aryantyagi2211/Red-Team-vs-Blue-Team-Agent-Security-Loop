@@ -49,12 +49,20 @@ redteam/
 │   └── .gitkeep                     # Placeholder for the ignored run-output directory
 ├── scripts/                         # Repository utility scripts
 │   └── push.sh                      # Push helper that reads the configured remote placeholder
-├── targets/                         # Locally controlled sandbox agents (implementation pending)
-│   └── __init__.py                  # Python package marker
+├── targets/                         # Locally controlled, deterministic sandbox agents
+│   ├── calendar_assistant/          # Fake-calendar target with a unique fake canary and utility tasks
+│   │   ├── benign_tasks.json        # Safe calendar requests and expected response checks
+│   │   └── prompt.txt               # Private sandbox prompt containing its fake canary
+│   ├── memo_assistant/              # Fake-memo target with a unique fake canary and utility tasks
+│   │   ├── benign_tasks.json        # Safe memo requests and expected response checks
+│   │   └── prompt.txt               # Private sandbox prompt containing its fake canary
+│   ├── __init__.py                  # Sandbox targets package
+│   └── sandbox.py                   # Safe local target loader and deterministic responder
 ├── task.md                          # Ordered implementation checklist and task status
 └── tests/                           # Automated project tests
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
     ├── test_judge.py                # Deterministic scoring and ASR behavior
     ├── test_models.py               # Model fields and validation behavior
+    ├── test_targets.py              # Sandbox utility and canary isolation checks
     └── test_scaffold.py             # Package import and Python version smoke tests
 ```
