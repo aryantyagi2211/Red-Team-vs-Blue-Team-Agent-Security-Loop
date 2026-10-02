@@ -44,11 +44,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** Fake-client tests verify attack requests and collected results.
    - **Completion note:** Added an async attack runner and local fake sandbox client; tests cover request order, deterministic scoring, expected target errors, and propagation of unexpected failures.
 
-7. [ ] **Defender and patcher**
+7. [x] **Defender and patcher**
    - **Goal:** Apply logged prompt/config diffs, defend targets, and support rollback.
    - **Files touched:** `core/defender.py`, `tests/test_defender.py`.
    - **How to test:** Run `python -m pytest tests/test_defender.py`.
    - **Done when:** Tests verify patch application, change logging, and restoration after rollback.
+   - **Completion note:** Added deterministic training-only prompt hardening, required prompt-aware utility evaluator injection, rollback, and run-scoped non-overwriting snapshots/diffs; 11 focused tests, all 66 suite tests, and Ruff passed.
 
 8. [ ] **Loop orchestrator**
    - **Goal:** Implement attack, score, defend, and re-attack rounds with per-round ASR records.

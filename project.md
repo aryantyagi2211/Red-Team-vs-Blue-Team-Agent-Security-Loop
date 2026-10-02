@@ -33,20 +33,21 @@ redteam/
 │   └── __init__.py                  # Python package marker
 ├── cli/                             # Typer command-line interface package (implementation pending)
 │   └── __init__.py                  # Python package marker
-├── core/                            # Core models, scoring, runners, and loop (implementation pending)
+├── core/                            # Core models, scoring, defense, runners, and loop
 │   ├── __init__.py                  # Python package marker
 │   ├── attacker.py                  # Async runner and local fake sandbox client
+│   ├── defender.py                  # Training-only prompt hardening, run-scoped logs, and rollback
 │   ├── judge.py                     # Deterministic string scoring and split/category ASR
 │   └── models.py                    # Typed Pydantic attack, result, patch, and round models
 ├── dashboard/                       # Evaluation dashboard (implementation pending)
 │   └── .gitkeep                     # Placeholder until dashboard files are added
 ├── docs/                            # Integration notes and demonstration documentation
 │   └── .gitkeep                     # Placeholder until documentation is added
-├── git_remote.txt                   # User-managed Git remote placeholder; no remote configured yet
+├── git_remote.txt                   # User-managed Git remote URL placeholder
 ├── project.md                       # Project description and current repository structure
 ├── pyproject.toml                   # Python project metadata and dependencies
 ├── README.md                        # Current capabilities, setup instructions, and status
-├── runs/                            # Local JSON run records; contents are gitignored
+├── runs/                            # Local run-scoped prompt snapshots, diffs, and records (gitignored)
 │   └── .gitkeep                     # Placeholder for the ignored run-output directory
 ├── scripts/                         # Repository utility scripts
 │   └── push.sh                      # Push helper that reads the configured remote placeholder
@@ -63,6 +64,7 @@ redteam/
 └── tests/                           # Automated project tests
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
     ├── test_attacker.py             # Fake-client attack execution and result collection
+    ├── test_defender.py             # Patch application, utility evaluation, rollback, and artifact safety
     ├── test_judge.py                # Deterministic scoring and ASR behavior
     ├── test_models.py               # Model fields and validation behavior
     ├── test_targets.py              # Sandbox utility and canary isolation checks
