@@ -1,0 +1,34 @@
+{
+  "protocolVersion": "1.0",
+  "name": "calendar_assistant",
+  "description": "Deterministic local calendar sandbox for security evaluations.",
+  "url": "http://localhost:8000/",
+  "supportedInterfaces": [
+    {
+      "url": "http://localhost:8000/",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "version": "0.1.0",
+  "agentFramework": "starlette",
+  "preferredTransport": "JSONRPC",
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "skills": [
+    {
+      "id": "calendar-help",
+      "name": "Calendar Help",
+      "description": "Answers the deterministic calendar sandbox tasks.",
+      "tags": ["calendar", "sandbox"],
+      "examples": ["What weekday is two days after Monday?"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    }
+  ]
+}

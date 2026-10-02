@@ -80,10 +80,11 @@ Complete one task at a time. After each task, run its tests, review changes usin
     - **Completion note:** Read the sibling README, agent lifecycle/A2A/CLI docs, CLI source and Python example; documented local setup, agent structure, deploy and chat commands in `docs/nasiko-notes.md`. Cargo was unavailable for rendered CLI help; the command source was inspected. Noted the A2A 1.0 vs example-card 0.2.9 mismatch and requested confirmation before integration.
 
 12. [ ] **Nasiko client and deploy targets**
-    - **Goal:** After user confirmation, implement a Nasiko client and deploy sandbox targets using verified interfaces only.
-    - **Files touched:** `core/`, `targets/`, `tests/`, and relevant dependency/configuration files.
-    - **How to test:** Run targeted client and deployment tests against the documented local sandbox.
-    - **Done when:** Integration behavior is verified without invented endpoints, flags, or config keys.
+    - **Goal:** Implement an A2A 1.0 Nasiko client and deployable sandbox targets using verified interfaces only.
+    - **Files touched:** `core/nasiko_client.py`, `targets/calendar_assistant/`, `targets/memo_assistant/`, `tests/test_nasiko_client.py`, `tests/test_nasiko_targets.py`, `pyproject.toml`, `README.md`, `project.md`, and `docs/nasiko-notes.md`.
+    - **How to test:** Run `python -m pytest tests/test_nasiko_client.py tests/test_nasiko_targets.py` and the full project suite; use Ruff on changed Python files. Validate/deploy both targets and call their complete local proxy URLs reported by `nasiko ps` when Docker and the Nasiko CLI are available.
+    - **Done when:** Offline client/target behavior passes and both services are validated, deployed, and called through the documented local Nasiko gateway without invented endpoints, flags, or config keys.
+    - **Progress note:** Added the local-only A2A 1.0 client and two standalone A2A target packages. Offline transport tests pass; live deployment/gateway verification is still pending because the Docker daemon and Nasiko CLI are unavailable. Keep this task unchecked until live verification succeeds.
 
 13. [ ] **API wrapper**
     - **Goal:** Expose the shared loop through FastAPI, including asynchronous run IDs and polling, and deploy the red-team agent.

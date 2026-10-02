@@ -1,0 +1,34 @@
+{
+  "protocolVersion": "1.0",
+  "name": "memo_assistant",
+  "description": "Deterministic local memo sandbox for security evaluations.",
+  "url": "http://localhost:8000/",
+  "supportedInterfaces": [
+    {
+      "url": "http://localhost:8000/",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "version": "0.1.0",
+  "agentFramework": "starlette",
+  "preferredTransport": "JSONRPC",
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "skills": [
+    {
+      "id": "memo-help",
+      "name": "Memo Help",
+      "description": "Answers deterministic memo sandbox tasks.",
+      "tags": ["memo", "sandbox"],
+      "examples": ["Summarize this note: the library will close at 6 PM for maintenance."],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    }
+  ]
+}

@@ -75,16 +75,41 @@ CLI source.
   Sources: `../nasiko/docs/A2A_PROTOCOL.md` (Transport & Wire Format,
   Request Format, and Operations).
 
-## Open question before integration
+## A2A protocol decision for this project
 
 There is a protocol-version inconsistency in the checked-in material. The
 README says a deployed agent must speak A2A v1.0, and `docs/A2A_PROTOCOL.md`
 documents `A2A-Version: 1.0`; however, the checked-in
-`agents/currency-agent/AgentCard.json` declares `protocolVersion: "0.2.9"`.
-The lifecycle guide's AgentCard description also gives `0.2.9` as an example.
-The current source checkout does not resolve whether those example values are
-legacy or accepted. Confirm the version/compatibility requirement before
-implementing a Nasiko target or client.
+`agents/currency-agent/AgentCard.json` declares `protocolVersion: "0.2.9"`,
+and the lifecycle guide uses the same legacy example. The current server
+source defines the A2A version as `1.0` in `types/src/a2a.rs`, and the checked
+in assistant agent uses `a2a-sdk[http-server]==1.1.0` in
+`agents/assistant-agent/pyproject.toml`. Following the current server protocol
+and assistant example, this project uses A2A 1.0 request headers, wire
+messages, target runtime cards, and static `AgentCard.json` files. This is a
+compatibility decision based on the current implementation, not a claim that
+the legacy currency-agent card has been migrated.
+
+## Task 12 implementation and verification status
+
+- `core/nasiko_client.py` sends the documented JSON-RPC `SendMessage` request
+  with `A2A-Version: 1.0`. It requires callers to provide the complete endpoint
+  URL and restricts it to localhost or a loopback IP; do not derive or guess a
+  proxy path. For deployed agents, use the complete path reported by
+  `nasiko ps`.
+- `targets/calendar_assistant/` and `targets/memo_assistant/` contain static
+  A2A 1.0 cards, Dockerfiles, standalone dependency manifests, and deterministic
+  A2A services under `src/`. Each returns its existing benign fixture for an
+  exact safe request and a safe fallback otherwise; neither service exposes
+  its prompt canary.
+- Offline tests exercise the actual A2A service routes with an in-process
+  ASGI transport and call them through `NasikoClient`. These tests verify
+  protocol serialization and fixture behavior, but do not substitute for a
+  live deployment or call through the Nasiko control plane.
+- Live validation is pending because the Docker Desktop Linux daemon was
+  unavailable and neither Cargo nor the `nasiko` CLI was installed when this
+  task was performed. Do not mark Task 12 complete until the targets have been
+  validated/deployed and called through the local Nasiko gateway.
 
 The CLI help command (`cargo run --manifest-path cli/Cargo.toml -- --help`)
 was attempted but could not run because Cargo is unavailable. The command

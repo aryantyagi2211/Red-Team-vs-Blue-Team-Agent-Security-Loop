@@ -2,6 +2,8 @@
 
 Red-Team vs Blue-Team Loop for Nasiko is a local, controlled security-evaluation project that runs deterministic prompt-injection and data-leak probes against sandbox agents we deploy ourselves, scores outcomes using fake canary strings, and iteratively hardens agent prompts or gateway rules while tracking attack success rates and holdout performance.
 
+The local Python loop, CLI, Nasiko A2A 1.0 client, and two deployable fixture targets are implemented. Offline A2A transport tests pass, but live target deployment and gateway verification remain pending because Docker Desktop's Linux daemon and the Nasiko CLI are unavailable. Tasks 13–15 (API, dashboard, and final review) are not implemented.
+
 ## Repository structure
 
 This tree reflects the project files currently present; planned paths will be added here as their tasks create them.
@@ -41,7 +43,8 @@ redteam/
 │   ├── holdout.py                   # Split hashes, overlap checks, holdout metrics, and gap report
 │   ├── judge.py                     # Deterministic string scoring and split/category ASR
 │   ├── loop.py                      # Baseline/patch rounds, progress, retries, and JSON run persistence
-│   └── models.py                    # Typed Pydantic attack, result, patch, and round models
+│   ├── models.py                    # Typed Pydantic attack, result, patch, and round models
+│   └── nasiko_client.py             # Local-only A2A 1.0 client for Nasiko proxy endpoints
 ├── dashboard/                       # Evaluation dashboard (implementation pending)
 │   └── .gitkeep                     # Placeholder until dashboard files are added
 ├── docs/                            # Verified Nasiko integration notes and demo documentation
@@ -56,14 +59,26 @@ redteam/
 ├── scripts/                         # Repository utility scripts
 │   └── push.sh                      # Push helper that reads the configured remote placeholder
 ├── targets/                         # Locally controlled, deterministic sandbox agents
-│   ├── calendar_assistant/          # Fake-calendar target with a unique fake canary and utility tasks
-│   │   ├── benign_tasks.json        # Safe calendar requests and expected response checks
-│   │   └── prompt.txt               # Private sandbox prompt containing its fake canary
-│   ├── memo_assistant/              # Fake-memo target with a unique fake canary and utility tasks
-│   │   ├── benign_tasks.json        # Safe memo requests and expected response checks
-│   │   └── prompt.txt               # Private sandbox prompt containing its fake canary
 │   ├── __init__.py                  # Sandbox targets package
-│   └── sandbox.py                   # Safe local target loader and deterministic responder
+│   ├── sandbox.py                   # Safe local target loader and deterministic responder
+│   ├── calendar_assistant/          # Fake-calendar A2A fixture target and deploy context
+│   │   ├── .dockerignore            # Exclude Python bytecode from the Docker context
+│   │   ├── AgentCard.json           # A2A 1.0 card for Nasiko validation/deployment
+│   │   ├── Dockerfile               # Container build for the calendar service
+│   │   ├── benign_tasks.json        # Safe calendar requests and expected response checks
+│   │   ├── prompt.txt               # Private sandbox prompt containing its fake canary
+│   │   ├── pyproject.toml           # Standalone target runtime dependencies
+│   │   └── src/
+│   │       └── main.py              # Deterministic A2A service implementation
+│   └── memo_assistant/              # Fake-memo A2A fixture target and deploy context
+│       ├── .dockerignore            # Exclude Python bytecode from the Docker context
+│       ├── AgentCard.json           # A2A 1.0 card for Nasiko validation/deployment
+│       ├── Dockerfile               # Container build for the memo service
+│       ├── benign_tasks.json        # Safe memo requests and expected response checks
+│       ├── prompt.txt               # Private sandbox prompt containing its fake canary
+│       ├── pyproject.toml           # Standalone target runtime dependencies
+│       └── src/
+│           └── main.py              # Deterministic A2A service implementation
 ├── task.md                          # Ordered implementation checklist and task status
 └── tests/                           # Automated project tests
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
@@ -74,6 +89,8 @@ redteam/
     ├── test_judge.py                # Deterministic scoring and ASR behavior
     ├── test_loop.py                 # Round flow, ASR, rollback, persistence, retries, and cancellation
     ├── test_models.py               # Model fields and validation behavior
+    ├── test_nasiko_client.py        # A2A request format, endpoint guards, and errors
+    ├── test_nasiko_targets.py       # Offline client/target integration and deployment metadata
     ├── test_targets.py              # Sandbox utility and canary isolation checks
     └── test_scaffold.py             # Package import and Python version smoke tests
 ```
