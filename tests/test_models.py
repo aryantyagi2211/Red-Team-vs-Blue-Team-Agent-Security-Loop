@@ -98,6 +98,7 @@ def test_round_record_accepts_optional_patch_and_results() -> None:
         train_asr=0.5,
         holdout_asr=0.25,
         asr_by_category={"prompt_leak": 0.5},
+        holdout_asr_by_category={"prompt_leak": 0.25},
         utility_pass_rate=1.0,
         status="ok",
         results=[
@@ -124,6 +125,7 @@ def test_round_record_accepts_optional_patch_and_results() -> None:
         ("train_asr", -0.1),
         ("holdout_asr", 1.1),
         ("asr_by_category", {"prompt_leak": 1.5}),
+        ("holdout_asr_by_category", {"prompt_leak": 1.5}),
         ("utility_pass_rate", -0.1),
     ],
 )
@@ -137,6 +139,7 @@ def test_round_record_rejects_rates_outside_zero_to_one(
         "train_asr": 0.0,
         "holdout_asr": 0.0,
         "asr_by_category": {},
+        "holdout_asr_by_category": {},
         "utility_pass_rate": 1.0,
         "status": "ok",
         "results": [],

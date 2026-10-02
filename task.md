@@ -58,11 +58,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
    - **Done when:** Fake-target tests verify the round sequence, ASR calculation, and JSON run records.
    - **Completion note:** Added baseline plus up to 10 patch rounds, isolated train-only defender input, train/holdout scoring, capped concurrency and retries, progress callbacks, atomic round/summary records, and cancellation/error persistence; 15 focused tests pass.
 
-9. [ ] **Holdout evaluation**
+9. [x] **Holdout evaluation**
    - **Goal:** Evaluate the defended target against unseen holdout attacks and report holdout ASR.
    - **Files touched:** `core/holdout.py`, `tests/test_holdout.py`.
    - **How to test:** Run `python -m pytest tests/test_holdout.py`.
    - **Done when:** Tests confirm the holdout set is evaluated separately and its ASR is reported.
+   - **Completion note:** Added per-run split hashes verified throughout loop execution, strict >60% Jaccard overlap rejection, holdout ASR by category on every round, and a persisted baseline/final report with a strict >0.15 generalization-gap warning; 26 holdout/loop tests and all 93 project tests pass.
 
 10. [ ] **CLI**
     - **Goal:** Add Typer commands for running evaluations and reporting saved runs through the shared core.

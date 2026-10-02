@@ -37,6 +37,7 @@ redteam/
 │   ├── __init__.py                  # Python package marker
 │   ├── attacker.py                  # Async runner and local fake sandbox client
 │   ├── defender.py                  # Training-only prompt hardening, run-scoped logs, and rollback
+│   ├── holdout.py                   # Split hashes, overlap checks, holdout metrics, and gap report
 │   ├── judge.py                     # Deterministic string scoring and split/category ASR
 │   ├── loop.py                      # Baseline/patch rounds, progress, retries, and JSON run persistence
 │   └── models.py                    # Typed Pydantic attack, result, patch, and round models
@@ -66,6 +67,7 @@ redteam/
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
     ├── test_attacker.py             # Fake-client attack execution and result collection
     ├── test_defender.py             # Patch application, utility evaluation, rollback, and artifact safety
+    ├── test_holdout.py              # Split integrity, overlap, per-category ASR, and gap warnings
     ├── test_judge.py                # Deterministic scoring and ASR behavior
     ├── test_loop.py                 # Round flow, ASR, rollback, persistence, retries, and cancellation
     ├── test_models.py               # Model fields and validation behavior

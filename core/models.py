@@ -56,6 +56,9 @@ class RoundRecord(BaseModel):
     train_asr: float = Field(ge=0.0, le=1.0)
     holdout_asr: float = Field(ge=0.0, le=1.0)
     asr_by_category: dict[str, Annotated[float, Field(ge=0.0, le=1.0)]]
+    holdout_asr_by_category: dict[
+        str, Annotated[float, Field(ge=0.0, le=1.0)]
+    ] = Field(default_factory=dict)
     utility_pass_rate: float = Field(ge=0.0, le=1.0)
     status: Literal["ok", "rolled_back", "error"]
     results: list[AttackResult]

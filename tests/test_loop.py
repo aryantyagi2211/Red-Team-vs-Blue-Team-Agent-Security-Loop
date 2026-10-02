@@ -176,6 +176,18 @@ def test_asr_drops_after_prompt_patch_and_saves_each_round(
     assert [record.round for record in summary.rounds] == [0, 1]
     assert [record.train_asr for record in summary.rounds] == [1.0, 0.0]
     assert [record.holdout_asr for record in summary.rounds] == [1.0, 0.0]
+    assert summary.rounds[0].holdout_asr_by_category == {
+        "prompt_leak": 1.0,
+        "instruction_override": 1.0,
+        "indirect_injection": 1.0,
+        "data_exfiltration": 1.0,
+    }
+    assert summary.rounds[1].holdout_asr_by_category == {
+        "prompt_leak": 0.0,
+        "instruction_override": 0.0,
+        "indirect_injection": 0.0,
+        "data_exfiltration": 0.0,
+    }
     assert summary.rounds[1].patch is not None
     assert summary.rounds[1].utility_pass_rate == 1.0
     assert summary.rounds[0].utility_pass_rate == 0.0
@@ -217,6 +229,15 @@ def test_asr_drops_after_prompt_patch_and_saves_each_round(
             "result_count": 9,
         },
         {"run_id": "hardening", "round": 1, "step": "round_saved"},
+        {
+            "run_id": "hardening",
+            "round": 1,
+            "step": "holdout_report",
+            "baseline_holdout_asr": 1.0,
+            "final_holdout_asr": 0.0,
+            "generalization_gap": 0.0,
+            "memorization_warning": False,
+        },
     ]
 
 
@@ -307,8 +328,8 @@ def test_unavailable_target_retries_twice_then_stops_and_reports_error(
     write_attack_sets(
         tmp_path,
         monkeypatch,
-        [make_attack("train-1", "train")],
-        [make_attack("holdout-1", "holdout")],
+        [make_attack("train-1", "train", "summarize calendar entries")],
+        [make_attack("holdout-1", "holdout", "describe recipe ingredients")],
     )
     client = AlwaysUnavailableClient()
 

@@ -23,6 +23,13 @@ from core.defender import (
     build_defensive_patch,
     train_failure_categories,
 )
+from core.holdout import (
+    GENERALIZATION_GAP_THRESHOLD,
+    create_holdout_report,
+    holdout_asr_by_category,
+    load_fixed_splits,
+    save_split_hashes,
+)
 from core.judge import ASRReport, calculate_asr
 from core.models import Attack, AttackResult, Patch, RoundRecord
 from targets.sandbox import SandboxTarget, load_target
@@ -71,19 +78,6 @@ class _RetryingClient:
 def _new_run_id() -> str:
     timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S")
     return f"{timestamp}_{secrets.token_hex(3)}"
-
-
-def _load_attack_set(split: Literal["train", "holdout"]) -> list[Attack]:
-    path = ATTACKS_DIR / f"{split}.json"
-    raw_attacks = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(raw_attacks, list):
-        raise TypeError(f"{path} must contain a JSON array")
-    attacks = [Attack.model_validate(item) for item in raw_attacks]
-    if not attacks:
-        raise ValueError(f"{path} must contain at least one attack")
-    if any(attack.split != split for attack in attacks):
-        raise ValueError(f"{path} contains an attack from the wrong split")
-    return attacks
 
 
 def _target_canary(target: SandboxTarget) -> str:
@@ -216,6 +210,7 @@ def _make_record(
         train_asr=asr.train,
         holdout_asr=asr.holdout,
         asr_by_category=asr.by_category,
+        holdout_asr_by_category=holdout_asr_by_category(results),
         utility_pass_rate=utility_pass_rate,
         status=status,
         results=results,
@@ -276,12 +271,21 @@ async def run_loop(
         summary.rounds.append(record)
 
     try:
-        train_attacks = _load_attack_set("train")
-        holdout_attacks = _load_attack_set("holdout")
+        train_attacks, holdout_attacks = load_fixed_splits(
+            actual_run_id,
+            ATTACKS_DIR,
+            RUNS_DIR,
+        )
         initial_target = load_target(target)
         canary = _target_canary(initial_target)
         previous_results: list[AttackResult] = []
         for round_number in range(rounds + 1):
+            save_split_hashes(
+                actual_run_id,
+                ATTACKS_DIR / "train.json",
+                ATTACKS_DIR / "holdout.json",
+                RUNS_DIR,
+            )
             current_round = round_number
             current_patch = None
             current_results = []
@@ -376,6 +380,12 @@ async def run_loop(
 
             if unavailable:
                 status = "error"
+            save_split_hashes(
+                actual_run_id,
+                ATTACKS_DIR / "train.json",
+                ATTACKS_DIR / "holdout.json",
+                RUNS_DIR,
+            )
             record = _make_record(
                 actual_run_id,
                 target,
@@ -416,7 +426,25 @@ async def run_loop(
         summary.status = "ok"
         if summary.stop_reason is None:
             summary.stop_reason = "maximum rounds completed"
+        holdout_report = create_holdout_report(actual_run_id, run_dir)
+        _atomic_write_json(
+            run_dir / "holdout_report.json",
+            holdout_report.model_dump(mode="json"),
+        )
         persist_summary()
+        warning = (
+            holdout_report.generalization_gap > GENERALIZATION_GAP_THRESHOLD
+        )
+        _emit(
+            on_progress,
+            actual_run_id,
+            summary.rounds[-1].round,
+            "holdout_report",
+            baseline_holdout_asr=holdout_report.baseline_holdout_asr,
+            final_holdout_asr=holdout_report.final_holdout_asr,
+            generalization_gap=holdout_report.generalization_gap,
+            memorization_warning=warning,
+        )
         return summary
     except asyncio.CancelledError:
         save_incomplete_round()
