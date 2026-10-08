@@ -36,6 +36,7 @@ def test_client_sends_a2a_10_and_extracts_task_artifact() -> None:
     async def call() -> str:
         async with NasikoClient(
             {"calendar_assistant": "http://localhost:8080/api/agents/id/"},
+            auth_token="local-test-token",
             transport=httpx.MockTransport(respond),
         ) as client:
             return await client.send("calendar_assistant", "Safe local request")
@@ -45,7 +46,9 @@ def test_client_sends_a2a_10_and_extracts_task_artifact() -> None:
     assert result == "Local sandbox answer."
     request = captured["request"]
     assert isinstance(request, httpx.Request)
+    assert request.url.path == "/api/agents/id"
     assert request.headers["A2A-Version"] == "1.0"
+    assert request.headers["Authorization"] == "Bearer local-test-token"
     body = captured["body"]
     assert isinstance(body, dict)
     assert body["jsonrpc"] == "2.0"
@@ -181,3 +184,12 @@ def test_client_rejects_empty_endpoint_map_and_invalid_timeout() -> None:
         NasikoClient({})
     with pytest.raises(ValueError, match="positive"):
         NasikoClient({"calendar_assistant": "http://localhost:8080"}, timeout_seconds=0)
+
+
+@pytest.mark.parametrize("auth_token", ["", " token", "token "])
+def test_client_rejects_empty_or_padded_auth_token(auth_token: str) -> None:
+    with pytest.raises(ValueError, match="auth_token"):
+        NasikoClient(
+            {"calendar_assistant": "http://localhost:8080"},
+            auth_token=auth_token,
+        )

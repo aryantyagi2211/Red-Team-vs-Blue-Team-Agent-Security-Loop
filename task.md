@@ -79,12 +79,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
     - **Done when:** Notes cite verified repository facts and the user has been asked to confirm before task 12.
     - **Completion note:** Read the sibling README, agent lifecycle/A2A/CLI docs, CLI source and Python example; documented local setup, agent structure, deploy and chat commands in `docs/nasiko-notes.md`. Cargo was unavailable for rendered CLI help; the command source was inspected. Noted the A2A 1.0 vs example-card 0.2.9 mismatch and requested confirmation before integration.
 
-12. [ ] **Nasiko client and deploy targets**
+12. [x] **Nasiko client and deploy targets**
     - **Goal:** Implement an A2A 1.0 Nasiko client and deployable sandbox targets using verified interfaces only.
     - **Files touched:** `core/nasiko_client.py`, `targets/calendar_assistant/`, `targets/memo_assistant/`, `tests/test_nasiko_client.py`, `tests/test_nasiko_targets.py`, `pyproject.toml`, `README.md`, `project.md`, and `docs/nasiko-notes.md`.
-    - **How to test:** Run `python -m pytest tests/test_nasiko_client.py tests/test_nasiko_targets.py` and the full project suite; use Ruff on changed Python files. Validate/deploy both targets and call their complete local proxy URLs reported by `nasiko ps` when Docker and the Nasiko CLI are available.
+    - **How to test:** Run `python -m pytest tests/test_nasiko_client.py tests/test_nasiko_targets.py` and the full project suite; use Ruff on changed Python files. Validate/deploy both targets and call their complete local proxy URLs reported by `nasiko ps` with an explicit local bearer token.
     - **Done when:** Offline client/target behavior passes and both services are validated, deployed, and called through the documented local Nasiko gateway without invented endpoints, flags, or config keys.
-    - **Progress note:** Added the local-only A2A 1.0 client and two standalone A2A target packages. Offline transport tests pass; live deployment/gateway verification is still pending because the Docker daemon and Nasiko CLI are unavailable. Keep this task unchecked until live verification succeeds.
+    - **Completion note:** Added explicit Bearer-token support and root-proxy-path normalization to the local-only A2A 1.0 client. Offline tests pass; both targets validated and deployed, then passed benign-response and planted-fake-canary non-disclosure checks through the authenticated local Nasiko gateway. On Windows, ran the source-built control plane on the same Docker network as the agents so the gateway could reach their private container endpoints.
 
 13. [ ] **API wrapper**
     - **Goal:** Expose the shared loop through FastAPI, including asynchronous run IDs and polling, and deploy the red-team agent.

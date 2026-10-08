@@ -2,7 +2,7 @@
 
 Red-Team vs Blue-Team Loop for Nasiko is a local, controlled security-evaluation project that runs deterministic prompt-injection and data-leak probes against sandbox agents we deploy ourselves, scores outcomes using fake canary strings, and iteratively hardens agent prompts or gateway rules while tracking attack success rates and holdout performance.
 
-The local Python loop, CLI, Nasiko A2A 1.0 client, and two deployable fixture targets are implemented. Offline A2A transport tests pass, but live target deployment and gateway verification remain pending because Docker Desktop's Linux daemon and the Nasiko CLI are unavailable. Tasks 13–15 (API, dashboard, and final review) are not implemented.
+The local Python loop, CLI, authenticated Nasiko A2A 1.0 client, and two deployable fixture targets are implemented. Both targets have been validated, deployed, and called through the local Nasiko gateway; benign responses and fake-canary non-disclosure were verified offline and live. Tasks 13–15 (API, dashboard, and final review) are not implemented.
 
 ## Repository structure
 
@@ -44,7 +44,7 @@ redteam/
 │   ├── judge.py                     # Deterministic string scoring and split/category ASR
 │   ├── loop.py                      # Baseline/patch rounds, progress, retries, and JSON run persistence
 │   ├── models.py                    # Typed Pydantic attack, result, patch, and round models
-│   └── nasiko_client.py             # Local-only A2A 1.0 client for Nasiko proxy endpoints
+│   └── nasiko_client.py             # Local-only A2A 1.0 client with explicit proxy authentication
 ├── dashboard/                       # Evaluation dashboard (implementation pending)
 │   └── .gitkeep                     # Placeholder until dashboard files are added
 ├── docs/                            # Verified Nasiko integration notes and demo documentation
@@ -63,6 +63,8 @@ redteam/
 │   ├── sandbox.py                   # Safe local target loader and deterministic responder
 │   ├── calendar_assistant/          # Fake-calendar A2A fixture target and deploy context
 │   │   ├── .dockerignore            # Exclude Python bytecode from the Docker context
+│   │   ├── .nasiko/                 # Nasiko-generated deployment metadata (gitignored)
+│   │   │   └── agent.json           # Local binding to the deployed agent
 │   │   ├── AgentCard.json           # A2A 1.0 card for Nasiko validation/deployment
 │   │   ├── Dockerfile               # Container build for the calendar service
 │   │   ├── benign_tasks.json        # Safe calendar requests and expected response checks
@@ -72,6 +74,8 @@ redteam/
 │   │       └── main.py              # Deterministic A2A service implementation
 │   └── memo_assistant/              # Fake-memo A2A fixture target and deploy context
 │       ├── .dockerignore            # Exclude Python bytecode from the Docker context
+│       ├── .nasiko/                 # Nasiko-generated deployment metadata (gitignored)
+│       │   └── agent.json           # Local binding to the deployed agent
 │       ├── AgentCard.json           # A2A 1.0 card for Nasiko validation/deployment
 │       ├── Dockerfile               # Container build for the memo service
 │       ├── benign_tasks.json        # Safe memo requests and expected response checks

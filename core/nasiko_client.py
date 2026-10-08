@@ -10,6 +10,7 @@ from core.attacker import TargetRequestError
 
 LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
 TARGET_NAME_PATTERN = re.compile(r"[a-z][a-z0-9_]*\Z")
+NASIKO_PROXY_ROOT_PATH_PATTERN = re.compile(r"/api/agents/[^/]+/\Z")
 
 
 def _validate_endpoint(target: str, endpoint: str) -> str:
@@ -34,6 +35,8 @@ def _validate_endpoint(target: str, endpoint: str) -> str:
         raise ValueError(
             f"endpoint for {target!r} must use HTTP(S) on localhost or a loopback IP"
         )
+    if NASIKO_PROXY_ROOT_PATH_PATTERN.fullmatch(parsed.path):
+        return endpoint[:-1]
     return endpoint
 
 
@@ -92,23 +95,37 @@ def _extract_text(result: object) -> str:
 
 
 class NasikoClient:
-    """A2A 1.0 client for explicitly supplied local Nasiko proxy endpoints."""
+    """A2A 1.0 client for explicitly supplied local Nasiko proxy endpoints.
+
+    Pass ``auth_token`` to authenticate with a control-plane proxy; credentials
+    are never loaded implicitly.
+    """
 
     def __init__(
         self,
         endpoints: Mapping[str, str],
         *,
+        auth_token: str | None = None,
         timeout_seconds: float = 30.0,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         if not endpoints:
             raise ValueError("at least one local Nasiko endpoint is required")
+        if auth_token is not None and (
+            not auth_token or auth_token != auth_token.strip()
+        ):
+            raise ValueError(
+                "auth_token must be non-empty and have no surrounding whitespace"
+            )
         if timeout_seconds <= 0:
             raise ValueError("timeout_seconds must be positive")
         self._endpoints = {
             target: _validate_endpoint(target, endpoint)
             for target, endpoint in endpoints.items()
         }
+        self._auth_headers = (
+            {"Authorization": f"Bearer {auth_token}"} if auth_token is not None else {}
+        )
         self._client = httpx.AsyncClient(
             timeout=timeout_seconds,
             follow_redirects=False,
@@ -139,7 +156,7 @@ class NasikoClient:
             response = await self._client.post(
                 endpoint,
                 json=body,
-                headers={"A2A-Version": "1.0"},
+                headers={"A2A-Version": "1.0", **self._auth_headers},
             )
             response.raise_for_status()
         except httpx.TimeoutException as exc:

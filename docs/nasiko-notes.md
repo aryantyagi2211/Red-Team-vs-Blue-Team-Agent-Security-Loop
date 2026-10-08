@@ -1,10 +1,8 @@
 # Nasiko integration research notes
 
 These notes record facts verified in the read-only sibling checkout at
-`../nasiko`. No Nasiko source files were changed. Nasiko CLI help could not be
-executed because `cargo` is not installed in this environment; command syntax
-below was cross-checked against the repository README, CLI design document, and
-CLI source.
+`../nasiko`. No Nasiko source files were changed. The installed CLI help and
+live local deployment and gateway calls were also verified.
 
 ## Running Nasiko locally
 
@@ -26,6 +24,15 @@ CLI source.
 - For a local control plane, the lifecycle guide documents `nasiko up`,
   `nasiko deploy .`, `nasiko ps`, and `nasiko down`.
   Source: `../nasiko/docs/AGENT_LIFECYCLE.md` (Local cluster workflow).
+- On Windows Docker Desktop, a host-native server can report healthy while
+  failing to proxy to agents at Docker-private IPs. The live test reproduced a
+  502 from that topology. The source-built server container was instead attached
+  to the same `nasiko` Docker network as the agents; its proxy calls then
+  succeeded. The source Dockerfile and full Compose definition support running
+  the server as a container on that network.
+  Sources: `../nasiko/server/Dockerfile`,
+  `../nasiko/docker-compose.yml`,
+  `../nasiko/server/src/agent_proxy.rs`.
 
 ## Agent project structure and example
 
@@ -68,7 +75,17 @@ CLI source.
   sole ingress and says inter-agent calls are proxied through it; there is no
   separate gateway service.
   Sources: `../nasiko/cli/src/commands/chat.rs`,
+  `../nasiko/cli/src/commands/agents.rs`,
   `../nasiko/docs/A2A_PROTOCOL.md` (Overview and Nasiko Architecture Mapping).
+- The agent-proxy routes require control-plane authentication, and the CLI
+  sends its active session token as an HTTP Bearer token. `nasiko ps` prints a
+  trailing slash for root agent paths; the chat command removes trailing
+  slashes before sending. `core/nasiko_client.py` mirrors that root-path
+  normalization and accepts the token explicitly as `auth_token`; it never
+  reads the CLI credential file or an environment variable implicitly.
+  Sources: `../nasiko/server/src/lib.rs` (agent-proxy auth layer),
+  `../nasiko/cli/src/commands/chat.rs`,
+  `../nasiko/cli/src/commands/agents.rs`.
 - The documented A2A binding is JSON-RPC 2.0 over HTTP(S), with
   `Content-Type: application/json` and `A2A-Version: 1.0`; the protocol guide
   shows `SendMessage` requests with message text in `params.message.parts`.
@@ -93,25 +110,29 @@ the legacy currency-agent card has been migrated.
 ## Task 12 implementation and verification status
 
 - `core/nasiko_client.py` sends the documented JSON-RPC `SendMessage` request
-  with `A2A-Version: 1.0`. It requires callers to provide the complete endpoint
-  URL and restricts it to localhost or a loopback IP; do not derive or guess a
-  proxy path. For deployed agents, use the complete path reported by
-  `nasiko ps`.
+  with `A2A-Version: 1.0` and an optional explicit Bearer token. It requires
+  callers to provide the complete endpoint URL and restricts it to localhost
+  or a loopback IP; do not derive or guess a proxy path. For deployed agents,
+  use the complete endpoint reported by `nasiko ps`. Nasiko prints a trailing
+  slash for a root proxy route, so the client removes that slash to match the
+  canonical path used by `nasiko chat`.
 - `targets/calendar_assistant/` and `targets/memo_assistant/` contain static
   A2A 1.0 cards, Dockerfiles, standalone dependency manifests, and deterministic
   A2A services under `src/`. Each returns its existing benign fixture for an
   exact safe request and a safe fallback otherwise; neither service exposes
   its prompt canary.
 - Offline tests exercise the actual A2A service routes with an in-process
-  ASGI transport and call them through `NasikoClient`. These tests verify
-  protocol serialization and fixture behavior, but do not substitute for a
-  live deployment or call through the Nasiko control plane.
-- Live validation is pending because the Docker Desktop Linux daemon was
-  unavailable and neither Cargo nor the `nasiko` CLI was installed when this
-  task was performed. Do not mark Task 12 complete until the targets have been
-  validated/deployed and called through the local Nasiko gateway.
+  ASGI transport and call them through `NasikoClient`. Live verification also
+  validated, deployed, and called both targets through the authenticated local
+  Nasiko gateway. Each returned its benign fixture and the safe fallback for a
+  request containing its planted fake canary; neither response disclosed the
+  canary.
+- This Windows verification built the server from `../nasiko/server/Dockerfile`
+  and ran it on the same Docker network as the deployed agents. The native
+  host-server variant could not reach the agent containers' private network
+  addresses, even though the health and service-status checks passed.
 
-The CLI help command (`cargo run --manifest-path cli/Cargo.toml -- --help`)
-was attempted but could not run because Cargo is unavailable. The command
-surface was instead inspected in `../nasiko/cli/src/main.rs`,
-`../nasiko/cli/src/lib.rs`, and `../nasiko/docs/CLI_DESIGN.md`.
+The command syntax was checked with `nasiko --help`, `nasiko deploy --help`,
+`nasiko chat --help`, and the matching source in
+`../nasiko/cli/src/main.rs`, `../nasiko/cli/src/lib.rs`, and
+`../nasiko/docs/CLI_DESIGN.md`.
