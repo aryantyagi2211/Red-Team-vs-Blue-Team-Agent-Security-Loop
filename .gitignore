@@ -3,6 +3,11 @@ __pycache__/
 *.egg-info/
 .env
 .venv/
+.ruff_cache/
+.github/
+/task.md
+/project.md
+/PROJECT_REVIEW.md
 runs/*
 !runs/.gitkeep
 **/.nasiko/
