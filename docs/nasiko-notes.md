@@ -136,3 +136,36 @@ The command syntax was checked with `nasiko --help`, `nasiko deploy --help`,
 `nasiko chat --help`, and the matching source in
 `../nasiko/cli/src/main.rs`, `../nasiko/cli/src/lib.rs`, and
 `../nasiko/docs/CLI_DESIGN.md`.
+
+## Red-team API and deployed agent
+
+- `api/app.py` exposes `POST /runs` with `{"target":"calendar_assistant","rounds":0}`,
+  returning HTTP 202 and a run ID. `GET /runs/{run_id}` returns status and
+  latest in-process progress; `GET /runs/{run_id}/report` reads the persisted
+  `summary.json`. Inputs reject unknown targets and rounds outside 0–10.
+- The same FastAPI app serves an A2A 1.0 agent at `/`. Its `SendMessage` text
+  content is a JSON object with the same `target` and optional `rounds` fields.
+  The agent immediately returns the run ID; callers can poll the REST status
+  and report routes. Both entry points use `core.loop.run_loop`, whose default
+  client is the deterministic local fixture client. The API factory accepts an
+  injected `AttackClient` for tests.
+- The A2A executor, card routes, and JSON-RPC routes follow the checked-in
+  Python pattern in `../nasiko/agents/assistant-agent/main.py`. The protocol
+  guide documents JSON-RPC 2.0 and `A2A-Version: 1.0` in
+  `../nasiko/docs/A2A_PROTOCOL.md`.
+- The deployment image uses the repository root as its Docker build context
+  so the container runs the same `api/`, `core/`, `targets/`, and `attacks/`
+  source as the local API and CLI. The repository-root `.dockerignore` excludes
+  `.env`, `.nasiko` bindings, run records, and tests. Build with
+  `docker build -f api/Dockerfile -t nasiko-redteam-agent:0.1.0 .`; deploy the
+  tagged local image using the verified CLI form
+  `nasiko deploy nasiko-redteam-agent:0.1.0 --name redteam-agent --port 8000
+  --version 0.1.0 --yes`. The raw-image deployment path and these flags are
+  defined in `../nasiko/cli/src/commands/deploy.rs` and confirmed by
+  `nasiko deploy --help`.
+- The agent image was built and deployed locally as `redteam-agent:0.1.0`.
+  A live A2A `SendMessage` with JSON text started a run; authenticated requests
+  through the Nasiko agent proxy then polled `/runs/{run_id}` to `done` and
+  retrieved `/runs/{run_id}/report`. The deployed image uses the loop's
+  default deterministic fixture client. It does not currently call the other
+  deployed Nasiko agents as targets.

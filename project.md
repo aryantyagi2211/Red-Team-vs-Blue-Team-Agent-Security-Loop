@@ -2,7 +2,7 @@
 
 Red-Team vs Blue-Team Loop for Nasiko is a local, controlled security-evaluation project that runs deterministic prompt-injection and data-leak probes against sandbox agents we deploy ourselves, scores outcomes using fake canary strings, and iteratively hardens agent prompts or gateway rules while tracking attack success rates and holdout performance.
 
-The local Python loop, CLI, authenticated Nasiko A2A 1.0 client, and two deployable fixture targets are implemented. Both targets have been validated, deployed, and called through the local Nasiko gateway; benign responses and fake-canary non-disclosure were verified offline and live. Tasks 13–15 (API, dashboard, and final review) are not implemented.
+The local Python loop, CLI, REST API, Nasiko A2A 1.0 client and red-team agent, and two deployable fixture targets are implemented. Both target agents have been validated, deployed, and called through the local Nasiko gateway; benign responses and fake-canary non-disclosure were verified offline and live. The red-team agent is deployed and its A2A run start and REST status/report flow were verified through Nasiko. The API and agent use the shared loop with the deterministic fixture client by default. Tasks 14–15 (dashboard, and final review) remain.
 
 ## Repository structure
 
@@ -13,6 +13,7 @@ redteam/
 ├── .git/                            # Git metadata for this repository
 ├── .gitattributes                   # Keep shell scripts on LF line endings
 ├── .gitignore                       # Python, environment, virtualenv, and run-output exclusions
+├── .dockerignore                    # Exclude secrets, local bindings, runs, and tests from images
 ├── .github/                         # Repository guidance and task-specific skills
 │   ├── instructions/                # Project-wide development instructions
 │   │   └── intruction.instructions.md # Available project instructions (filename as found)
@@ -27,8 +28,10 @@ redteam/
 │       ├── loop-orchestrator/SKILL.md # Guidance for loop orchestration
 │       ├── nasiko-agent-builder/SKILL.md # Guidance for Nasiko-specific work
 │       └── project-review/SKILL.md # Guidance for final project review
-├── api/                             # FastAPI wrapper package (implementation pending)
-│   └── __init__.py                  # Python package marker
+├── api/                             # FastAPI run API, A2A red-team agent, and deployable image
+│   ├── __init__.py                  # API package description
+│   ├── app.py                       # Async run lifecycle, status/report routes, and A2A executor
+│   └── Dockerfile                   # Container image for local Nasiko deployment
 ├── attacks/                         # Training and holdout attack-library data
 │   ├── holdout.json                 # Unseen evaluation attack drafts
 │   ├── train.json                   # Training attack drafts
@@ -85,6 +88,7 @@ redteam/
 │           └── main.py              # Deterministic A2A service implementation
 ├── task.md                          # Ordered implementation checklist and task status
 └── tests/                           # Automated project tests
+    ├── test_api.py                  # REST run lifecycle, validation, reports, and A2A invocation
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
     ├── test_attacker.py             # Fake-client attack execution and result collection
     ├── test_cli.py                  # CLI run, report, attack listing, and exit-code behavior

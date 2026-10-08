@@ -86,11 +86,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
     - **Done when:** Offline client/target behavior passes and both services are validated, deployed, and called through the documented local Nasiko gateway without invented endpoints, flags, or config keys.
     - **Completion note:** Added explicit Bearer-token support and root-proxy-path normalization to the local-only A2A 1.0 client. Offline tests pass; both targets validated and deployed, then passed benign-response and planted-fake-canary non-disclosure checks through the authenticated local Nasiko gateway. On Windows, ran the source-built control plane on the same Docker network as the agents so the gateway could reach their private container endpoints.
 
-13. [ ] **API wrapper**
+13. [x] **API wrapper**
     - **Goal:** Expose the shared loop through FastAPI, including asynchronous run IDs and polling, and deploy the red-team agent.
-    - **Files touched:** `api/`, `tests/`, `pyproject.toml`, and deployment configuration.
-    - **How to test:** Run targeted API tests with a fake client and verify run creation and polling.
+    - **Files touched:** `api/app.py`, `api/Dockerfile`, `.dockerignore`, `tests/test_api.py`, `pyproject.toml`, `README.md`, `project.md`, and `docs/nasiko-notes.md`.
+    - **How to test:** Run `python -m pytest tests/test_api.py` and the full project suite; lint with Ruff; build and smoke-test the Docker image; deploy the A2A agent and verify run start and status/report polling through the Nasiko gateway.
     - **Done when:** API tests pass and the deployed agent invokes the same core loop as the CLI.
+    - **Completion note:** Added validated async REST run/status/report endpoints and an A2A 1.0 executor that starts the same `core.loop.run_loop`; both default to the deterministic fixture client and tests can inject a fake client. The Docker image runs shared repository source and excludes secrets, bindings, runs, and tests. All 11 API tests, the full 138-test suite, Ruff, and container smoke test passed; deployed `redteam-agent` and verified A2A run creation plus authenticated gateway polling/reporting.
 
 14. [ ] **Dashboard and sample run**
     - **Goal:** Add a dashboard and record a sample sandbox run.
