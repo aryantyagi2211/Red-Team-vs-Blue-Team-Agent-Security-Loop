@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101923">
+    <title>Red-Team / Blue-Team Evaluation</title>
+    <link rel="stylesheet" href="/dashboard/styles.css">
+    <script src="/dashboard/vendor/chart.umd.min.js" defer></script>
+    <script src="/dashboard/app.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">NASIKO · CONTROLLED SANDBOX</p>
+          <h1>Red-Team <span aria-hidden="true">/</span> Blue-Team</h1>
+          <p class="lede">Attack, harden, and measure. Only local sandbox targets and fake canaries.</p>
+        </div>
+        <div class="status-pill"><span class="status-dot"></span> LOCAL EVALUATION</div>
+      </header>
+
+      <section class="toolbar panel" aria-label="Run controls">
+        <label>
+          <span class="field-label">Evaluation run</span>
+          <select id="run-select" aria-label="Select an evaluation run"></select>
+        </label>
+        <form id="start-form">
+          <label>
+            <span class="field-label">Sandbox target</span>
+            <select id="target-select" name="target">
+              <option value="calendar_assistant">Calendar assistant</option>
+              <option value="memo_assistant">Memo assistant</option>
+            </select>
+          </label>
+          <label class="rounds-field">
+            <span class="field-label">Patch rounds</span>
+            <input name="rounds" type="number" min="0" max="10" value="3" required>
+          </label>
+          <button id="start-button" type="submit">Start local run</button>
+        </form>
+      </section>
+
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+      <div id="recorded-banner" class="recorded-banner" hidden>
+        <span class="recorded-tag">RECORDED RUN</span>
+        <span>Deterministic prompt-aware fixture; these are not live Nasiko agent results.</span>
+      </div>
+
+      <section class="hero-grid" aria-label="Run overview">
+        <article class="hero-card panel">
+          <p class="eyebrow">HOLDOUT ATTACK SUCCESS RATE</p>
+          <div class="headline-rates">
+            <div><span id="baseline-holdout" class="headline-number">—</span><span class="headline-caption">BASELINE</span></div>
+            <span class="rate-arrow" aria-hidden="true">→</span>
+            <div><span id="final-holdout" class="headline-number">—</span><span class="headline-caption">FINAL</span></div>
+          </div>
+          <p id="holdout-change" class="metric-note">Select a run to view its holdout results.</p>
+        </article>
+        <article class="stat-card panel">
+          <p class="eyebrow">TARGET</p>
+          <p id="target-name" class="stat-value">—</p>
+          <p class="stat-caption">Controlled sandbox</p>
+        </article>
+        <article class="stat-card panel">
+          <p class="eyebrow">RUN STATUS</p>
+          <p id="run-status" class="stat-value">—</p>
+          <p id="run-progress" class="stat-caption">Waiting for run data</p>
+        </article>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ROUND-BY-ROUND</p>
+            <h2>Security and utility</h2>
+          </div>
+          <span class="legend-note">Lower ASR is better · higher utility is better</span>
+        </div>
+        <div class="chart-wrap"><canvas id="round-chart" aria-label="Train and holdout attack success rate and utility pass rate by round"></canvas></div>
+        <p id="round-empty" class="empty-state" hidden>Round metrics will appear here as the run progresses.</p>
+      </section>
+
+      <section class="lower-grid">
+        <article class="panel chart-panel category-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">GENERALIZATION CHECK</p>
+              <h2>ASR by category</h2>
+            </div>
+            <span class="legend-note">Baseline vs final · holdout set</span>
+          </div>
+          <div class="category-chart-wrap"><canvas id="category-chart" aria-label="Baseline and final holdout attack success by category"></canvas></div>
+          <p id="category-empty" class="empty-state" hidden>No category metrics are available yet.</p>
+        </article>
+
+        <article class="panel diff-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">DEFENDER TRACE</p>
+              <h2>Prompt changes</h2>
+            </div>
+          </div>
+          <div id="diff-list" class="diff-list"><p class="empty-state">Choose a run to inspect its recorded prompt diffs.</p></div>
+          <p class="privacy-note">Fake canary values are redacted. Attack prompts and target responses are never displayed.</p>
+        </article>
+      </section>
+
+      <footer>
+        <span>Local-only evaluation · fake canaries · no external targets</span>
+        <span id="run-id-label"></span>
+      </footer>
+    </main>
+  </body>
+</html>

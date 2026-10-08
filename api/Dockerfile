@@ -5,6 +5,7 @@ COPY pyproject.toml README.md ./
 COPY api/ ./api/
 COPY attacks/ ./attacks/
 COPY core/ ./core/
+COPY dashboard/ ./dashboard/
 COPY targets/ ./targets/
 RUN pip install --no-cache-dir .
 

@@ -1,8 +1,10 @@
 import asyncio
 import json
 import logging
+import re
 import secrets
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Literal
 
 from a2a.helpers import (
@@ -23,6 +25,7 @@ from a2a.types import (
     TaskState,
 )
 from fastapi import FastAPI, HTTPException, status
+from fastapi.staticfiles import StaticFiles
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -38,6 +41,10 @@ from core.loop import MAX_ROUNDS, RUN_ID_PATTERN, RunSummary
 from targets.sandbox import TARGET_NAME_PATTERN, load_target
 
 logger = logging.getLogger(__name__)
+DASHBOARD_DIR = Path(__file__).parents[1] / "dashboard"
+SAMPLE_RUN_ID = "sample-calendar-hardening"
+_CANARY_PATTERN = re.compile(r"SECRET-CANARY-[A-Z]+-[A-Z0-9]+")
+
 
 class RunRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -189,9 +196,7 @@ class RedTeamAgentExecutor(AgentExecutor):
             run_id = self.coordinator.start(run_request)
         except (json.JSONDecodeError, ValidationError, HTTPException, TypeError) as exc:
             if isinstance(exc, ValidationError):
-                message = (
-                    "A2A input must be JSON with a known target and rounds from 0 to 10."
-                )
+                message = "A2A input must be JSON with a known target and rounds from 0 to 10."
             elif isinstance(exc, json.JSONDecodeError):
                 message = "A2A input must be valid JSON."
             elif isinstance(exc, HTTPException):
@@ -282,6 +287,122 @@ def create_app(client: AttackClient | None = None) -> FastAPI:
                 detail="saved run report is invalid",
             ) from exc
 
+    @app.get("/dashboard/runs")
+    async def list_dashboard_runs() -> dict[str, list[dict[str, object]]]:
+        runs: list[dict[str, object]] = []
+        sample_summary = _read_dashboard_summary(SAMPLE_RUN_ID, recorded=True)
+        runs.append(_dashboard_run_option(sample_summary, recorded=True))
+
+        for run_id, current in coordinator.statuses.items():
+            if (
+                run_id != SAMPLE_RUN_ID
+                and RUN_ID_PATTERN.fullmatch(run_id)
+                and not _dashboard_run_path(run_id, recorded=False).is_file()
+            ):
+                runs.append(
+                    {
+                        "run_id": run_id,
+                        "target": current.target,
+                        "status": current.status,
+                        "recorded": False,
+                    }
+                )
+
+        if loop.RUNS_DIR.is_dir():
+            for run_dir in loop.RUNS_DIR.iterdir():
+                if (
+                    not run_dir.is_dir()
+                    or run_dir.name == SAMPLE_RUN_ID
+                    or not RUN_ID_PATTERN.fullmatch(run_dir.name)
+                ):
+                    continue
+                try:
+                    summary = _read_dashboard_summary(run_dir.name, recorded=False)
+                except HTTPException as exc:
+                    logger.warning(
+                        "Skipping unavailable dashboard run %s: %s",
+                        run_dir.name,
+                        exc.detail,
+                    )
+                    continue
+                runs.append(_dashboard_run_option(summary, recorded=False))
+
+        runs[1:] = sorted(runs[1:], key=lambda run: str(run["run_id"]), reverse=True)
+        return {"runs": runs}
+
+    @app.get("/dashboard/runs/{run_id}")
+    async def get_dashboard_run(run_id: str) -> dict[str, object]:
+        recorded = run_id == SAMPLE_RUN_ID
+        if (
+            not recorded
+            and run_id in coordinator.statuses
+            and not _dashboard_run_path(run_id, recorded=False).is_file()
+        ):
+            current = coordinator.statuses[run_id]
+            return {
+                "run_id": run_id,
+                "target": current.target,
+                "status": current.status,
+                "recorded": False,
+                "rounds": [],
+                "progress": current.progress,
+            }
+        summary = _read_dashboard_summary(run_id, recorded=recorded)
+        rounds = [
+            {
+                "round": record.round,
+                "train_asr": record.train_asr,
+                "holdout_asr": record.holdout_asr,
+                "utility_pass_rate": record.utility_pass_rate,
+                "status": record.status,
+                "asr_by_category": record.asr_by_category,
+                "holdout_asr_by_category": record.holdout_asr_by_category,
+            }
+            for record in summary.rounds
+        ]
+        progress = None
+        if not recorded and run_id in coordinator.statuses:
+            progress = coordinator.statuses[run_id].progress
+        return {
+            "run_id": summary.run_id,
+            "target": summary.target,
+            "status": summary.status,
+            "recorded": recorded,
+            "rounds": rounds,
+            "progress": progress,
+        }
+
+    @app.get("/dashboard/runs/{run_id}/diffs")
+    async def get_dashboard_diffs(run_id: str) -> dict[str, list[dict[str, str]]]:
+        recorded = run_id == SAMPLE_RUN_ID
+        if (
+            not recorded
+            and run_id in coordinator.statuses
+            and not _dashboard_run_path(run_id, recorded=False).is_file()
+        ):
+            return {"diffs": []}
+        _read_dashboard_summary(run_id, recorded=recorded)
+        path = _dashboard_run_path(run_id, recorded=recorded)
+        diffs_dir = path.parent / "diffs"
+        diffs: list[dict[str, str]] = []
+        if diffs_dir.is_dir():
+            for diff_path in sorted(diffs_dir.glob("*.diff")):
+                try:
+                    text = diff_path.read_text(encoding="utf-8")
+                except OSError as exc:
+                    logger.exception("Could not read dashboard diff %s", diff_path.name)
+                    raise HTTPException(
+                        status_code=500,
+                        detail="saved prompt diff is unavailable",
+                    ) from exc
+                diffs.append(
+                    {
+                        "name": diff_path.name,
+                        "text": _CANARY_PATTERN.sub("[fake canary redacted]", text),
+                    }
+                )
+        return {"diffs": diffs}
+
     card = AgentCard(
         name="redteam-agent",
         description="Starts local red-team evaluations against controlled sandbox agents.",
@@ -316,7 +437,55 @@ def create_app(client: AttackClient | None = None) -> FastAPI:
     )
     app.router.routes.extend(create_agent_card_routes(card))
     app.router.routes.extend(create_jsonrpc_routes(handler, rpc_url="/"))
+    app.mount(
+        "/dashboard", StaticFiles(directory=DASHBOARD_DIR, html=True), name="dashboard"
+    )
     return app
+
+
+def _dashboard_run_path(run_id: str, *, recorded: bool) -> Path:
+    if not RUN_ID_PATTERN.fullmatch(run_id):
+        raise HTTPException(status_code=404, detail="run not found")
+    if recorded:
+        if run_id != SAMPLE_RUN_ID:
+            raise HTTPException(status_code=404, detail="run not found")
+        return DASHBOARD_DIR / "sample_run" / "summary.json"
+    runs_dir = loop.RUNS_DIR.resolve()
+    run_dir = (runs_dir / run_id).resolve()
+    if run_dir.parent != runs_dir:
+        raise HTTPException(status_code=404, detail="run not found")
+    return run_dir / "summary.json"
+
+
+def _read_dashboard_summary(run_id: str, *, recorded: bool) -> RunSummary:
+    path = _dashboard_run_path(run_id, recorded=recorded)
+    try:
+        summary = RunSummary.model_validate_json(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="run not found") from exc
+    except (OSError, ValueError) as exc:
+        logger.exception("Could not read dashboard run %s", run_id)
+        raise HTTPException(
+            status_code=500,
+            detail="saved dashboard run is invalid",
+        ) from exc
+    if summary.run_id != run_id:
+        logger.error("Dashboard run id mismatch while reading %s", run_id)
+        raise HTTPException(status_code=500, detail="saved dashboard run is invalid")
+    return summary
+
+
+def _dashboard_run_option(
+    summary: RunSummary,
+    *,
+    recorded: bool,
+) -> dict[str, object]:
+    return {
+        "run_id": summary.run_id,
+        "target": summary.target,
+        "status": summary.status,
+        "recorded": recorded,
+    }
 
 
 def _valid_run_id(run_id: str) -> bool:

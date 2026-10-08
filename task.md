@@ -93,11 +93,12 @@ Complete one task at a time. After each task, run its tests, review changes usin
     - **Done when:** API tests pass and the deployed agent invokes the same core loop as the CLI.
     - **Completion note:** Added validated async REST run/status/report endpoints and an A2A 1.0 executor that starts the same `core.loop.run_loop`; both default to the deterministic fixture client and tests can inject a fake client. The Docker image runs shared repository source and excludes secrets, bindings, runs, and tests. All 11 API tests, the full 138-test suite, Ruff, and container smoke test passed; deployed `redteam-agent` and verified A2A run creation plus authenticated gateway polling/reporting.
 
-14. [ ] **Dashboard and sample run**
+14. [x] **Dashboard and sample run**
     - **Goal:** Add a dashboard and record a sample sandbox run.
-    - **Files touched:** `dashboard/`, `runs/`, `tests/`, `README.md`.
-    - **How to test:** Run dashboard tests and verify the sample run loads locally.
+    - **Files touched:** `dashboard/`, `api/app.py`, `api/Dockerfile`, `tests/test_dashboard.py`, `README.md`, and `project.md`.
+    - **How to test:** Run `python -m pytest tests/test_dashboard.py` and the full suite; lint changed Python files with Ruff; open `/dashboard/` locally and verify the recorded sample and a newly started run.
     - **Done when:** The dashboard displays recorded round and holdout metrics from a fake-canary run.
+    - **Completion note:** Added a responsive local dashboard with offline Chart.js, live local-run creation/polling, ASR and utility charts, category comparison, and canary-redacted prompt diffs. Recorded a deterministic prompt-aware fake-client run with holdout ASR 100% → 0% and 100% utility, explicitly labeled as simulated rather than live Nasiko results. Added dashboard/static API safety tests; 5 focused dashboard tests and all 143 suite tests pass, Ruff passes, the browser smoke test passed at desktop/mobile sizes, and the built container serves the dashboard and sample.
 
 15. [ ] **Project review and demo**
     - **Goal:** Review the complete project, write the demo script, and finalize the README.

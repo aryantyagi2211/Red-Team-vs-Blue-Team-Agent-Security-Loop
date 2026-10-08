@@ -2,7 +2,7 @@
 
 Red-Team vs Blue-Team Loop for Nasiko is a local, controlled security-evaluation project that runs deterministic prompt-injection and data-leak probes against sandbox agents we deploy ourselves, scores outcomes using fake canary strings, and iteratively hardens agent prompts or gateway rules while tracking attack success rates and holdout performance.
 
-The local Python loop, CLI, REST API, Nasiko A2A 1.0 client and red-team agent, and two deployable fixture targets are implemented. Both target agents have been validated, deployed, and called through the local Nasiko gateway; benign responses and fake-canary non-disclosure were verified offline and live. The red-team agent is deployed and its A2A run start and REST status/report flow were verified through Nasiko. The API and agent use the shared loop with the deterministic fixture client by default. Tasks 14–15 (dashboard, and final review) remain.
+The local Python loop, CLI, REST API, Nasiko A2A 1.0 client and red-team agent, two deployable fixture targets, and evaluation dashboard are implemented. Both target agents have been validated, deployed, and called through the local Nasiko gateway; benign responses and fake-canary non-disclosure were verified offline and live. The red-team agent is deployed and its A2A run start and REST status/report flow were verified through Nasiko. The dashboard reads aggregate round and holdout metrics, polls local runs, shows category and utility charts, and redacts canary values in prompt diffs. Its committed sample is explicitly labeled as a recorded deterministic fixture simulation, not a live Nasiko result. The API and agent use the deterministic fixture client by default. Task 15 (final project review and demo) remains.
 
 ## Repository structure
 
@@ -30,7 +30,7 @@ redteam/
 │       └── project-review/SKILL.md # Guidance for final project review
 ├── api/                             # FastAPI run API, A2A red-team agent, and deployable image
 │   ├── __init__.py                  # API package description
-│   ├── app.py                       # Async run lifecycle, status/report routes, and A2A executor
+│   ├── app.py                       # Async run lifecycle, dashboard metrics, static page, and A2A executor
 │   └── Dockerfile                   # Container image for local Nasiko deployment
 ├── attacks/                         # Training and holdout attack-library data
 │   ├── holdout.json                 # Unseen evaluation attack drafts
@@ -48,8 +48,18 @@ redteam/
 │   ├── loop.py                      # Baseline/patch rounds, progress, retries, and JSON run persistence
 │   ├── models.py                    # Typed Pydantic attack, result, patch, and round models
 │   └── nasiko_client.py             # Local-only A2A 1.0 client with explicit proxy authentication
-├── dashboard/                       # Evaluation dashboard (implementation pending)
-│   └── .gitkeep                     # Placeholder until dashboard files are added
+├── dashboard/                       # Local evaluation dashboard, offline chart, and recorded fixture sample
+│   ├── app.js                       # Run selection/start, polling, safe metrics, and charts
+│   ├── index.html                   # Dashboard page and evaluation controls
+│   ├── sample_run/                  # Recorded deterministic prompt-aware fixture evaluation
+│   │   ├── diffs/                   # Fake-canary-redacted prompt patch diffs
+│   │   │   └── calendar_assistant_round1.diff # Added defensive prompt rule
+│   │   ├── holdout_report.json      # Baseline/final holdout comparison and gap metrics
+│   │   └── summary.json             # Redacted round metrics and recorded run metadata
+│   ├── styles.css                   # High-contrast responsive projector-friendly styles
+│   └── vendor/                      # Offline chart library and its license
+│       ├── chart.umd.min.js         # Locally served Chart.js 4.4.8 bundle
+│       └── LICENSE.md               # Chart.js MIT license
 ├── docs/                            # Verified Nasiko integration notes and demo documentation
 │   ├── .gitkeep                     # Existing documentation-directory placeholder
 │   └── nasiko-notes.md              # Facts checked against the read-only sibling Nasiko repo
@@ -89,6 +99,7 @@ redteam/
 ├── task.md                          # Ordered implementation checklist and task status
 └── tests/                           # Automated project tests
     ├── test_api.py                  # REST run lifecycle, validation, reports, and A2A invocation
+    ├── test_dashboard.py             # Static assets, metric safety, sample run, and diff redaction
     ├── test_attack_library.py       # Split, category, ID, and holdout overlap checks
     ├── test_attacker.py             # Fake-client attack execution and result collection
     ├── test_cli.py                  # CLI run, report, attack listing, and exit-code behavior
