@@ -2,7 +2,7 @@
 
 Red-Team vs Blue-Team Loop for Nasiko is a local, controlled security-evaluation project that runs deterministic prompt-injection and data-leak probes against sandbox agents we deploy ourselves, scores outcomes using fake canary strings, and iteratively hardens agent prompts or gateway rules while tracking attack success rates and holdout performance.
 
-The local Python loop, CLI, REST API, Nasiko A2A 1.0 client and red-team agent, two deployable fixture targets, and evaluation dashboard are implemented. Both target agents have been validated, deployed, and called through the local Nasiko gateway; benign responses and fake-canary non-disclosure were verified offline and live. The red-team agent is deployed and its A2A run start and REST status/report flow were verified through Nasiko. The dashboard reads aggregate round and holdout metrics, polls local runs, shows category and utility charts, and redacts canary values in prompt diffs. Its committed sample is explicitly labeled as a recorded deterministic fixture simulation, not a live Nasiko result. The API and agent use the deterministic fixture client by default. Task 15 (final project review and demo) remains.
+The local Python loop, CLI, REST API, Nasiko A2A 1.0 client and red-team agent, two deployable fixture targets, and evaluation dashboard are implemented. Both target agents have been validated, deployed, and called through the local Nasiko gateway; benign responses and fake-canary non-disclosure were verified offline and live. The red-team agent is deployed and its A2A run start and REST status/report flow were verified through Nasiko. The dashboard reads aggregate round and holdout metrics, polls local runs, shows category and utility charts, and redacts canary values in prompt diffs. Its committed sample is explicitly labeled as a recorded deterministic fixture simulation, not a live Nasiko result. The API and agent use the deterministic fixture client by default. Task 15 is complete; the fresh-environment full suite passed all 143 tests. See `PROJECT_REVIEW.md` for validation evidence and `docs/demo-script.md` for the reproducible demo.
 
 ## Repository structure
 
@@ -62,9 +62,11 @@ redteam/
 │       └── LICENSE.md               # Chart.js MIT license
 ├── docs/                            # Verified Nasiko integration notes and demo documentation
 │   ├── .gitkeep                     # Existing documentation-directory placeholder
+│   ├── demo-script.md               # Reproducible, safety-scoped two-minute project demo
 │   └── nasiko-notes.md              # Facts checked against the read-only sibling Nasiko repo
 ├── git_remote.txt                   # User-managed Git remote URL placeholder
 ├── project.md                       # Project description and current repository structure
+├── PROJECT_REVIEW.md                # Final pass/fail checklist with validation evidence
 ├── pyproject.toml                   # Python project metadata and dependencies
 ├── README.md                        # Current capabilities, setup instructions, and status
 ├── runs/                            # Local round/summary JSON and run-scoped prompt snapshots/diffs (gitignored)

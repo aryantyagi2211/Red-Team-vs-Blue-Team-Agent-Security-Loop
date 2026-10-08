@@ -100,8 +100,9 @@ Complete one task at a time. After each task, run its tests, review changes usin
     - **Done when:** The dashboard displays recorded round and holdout metrics from a fake-canary run.
     - **Completion note:** Added a responsive local dashboard with offline Chart.js, live local-run creation/polling, ASR and utility charts, category comparison, and canary-redacted prompt diffs. Recorded a deterministic prompt-aware fake-client run with holdout ASR 100% → 0% and 100% utility, explicitly labeled as simulated rather than live Nasiko results. Added dashboard/static API safety tests; 5 focused dashboard tests and all 143 suite tests pass, Ruff passes, the browser smoke test passed at desktop/mobile sizes, and the built container serves the dashboard and sample.
 
-15. [ ] **Project review and demo**
+15. [x] **Project review and demo**
     - **Goal:** Review the complete project, write the demo script, and finalize the README.
-    - **Files touched:** `docs/demo-script.md`, `README.md`, and any files required for fixes from review.
-    - **How to test:** Run the full test suite and follow the demo script end to end.
+    - **Files touched:** `PROJECT_REVIEW.md`, `docs/demo-script.md`, `README.md`, `project.md`, and `task.md`.
+    - **How to test:** Install in a fresh virtual environment, run the full test suite and Ruff lint, exercise the CLI, API, dashboard, and optional benign Nasiko calls, and follow the demo script.
     - **Done when:** The project review is complete, the README reflects verified behavior, and the demo is reproducible.
+    - **Completion note:** Final review passed: fresh `.venv` setup, all 143 tests, CLI run/report, API lifecycle, local dashboard and recorded sample, deployed sandbox target and red-team agent checks, holdout isolation, and repository hygiene. Ruff lint passed. Documented the `nasiko chat` JSON-input caveat; the deployed A2A flow passed through the project client. Added the two-minute demo and finalized project documentation.
